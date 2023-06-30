@@ -1,13 +1,23 @@
 import argparse
 from pathlib import Path
 
+import numpy as np
+
+from dat2npy.dat_utils import read_file
+
 
 class FileConverterNamespace(argparse.Namespace):
     filepath: Path
 
 
 def parse_args() -> FileConverterNamespace:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Convert specified .dat file to .npy",
+        epilog=(
+            "P.S. Created file will be saved in the directory"
+            "of the given one to convert"
+        ),
+    )
 
     parser.add_argument(
         "filepath",
@@ -19,6 +29,13 @@ def parse_args() -> FileConverterNamespace:
 
 
 def main() -> int:
-    parse_args()
+    args = parse_args()
+    dat_file = read_file(args.filepath)
+
+    # Create output file path
+    output_filename = args.filepath.stem + ".npy"
+    output_filepath = args.filepath.parent / output_filename
+
+    np.save(output_filepath, dat_file.signal)
 
     return 0
