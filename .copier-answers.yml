@@ -7,4 +7,3 @@ project_name: .dat to .npy converter
 project_short_description: Set of scripts to convert .dat files to .npy (also labels
     for dataset generation)
 python_version: '3.10'
-
