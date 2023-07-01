@@ -14,7 +14,7 @@ def parse_args() -> FileConverterNamespace:
     parser = argparse.ArgumentParser(
         description="Convert specified .dat file to .npy",
         epilog=(
-            "P.S. Created file will be saved in the directory"
+            "P.S. Created file will be saved in the directory "
             "of the given one to convert"
         ),
     )
