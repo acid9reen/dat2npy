@@ -17,6 +17,14 @@ from dat2npy.types import Seconds
 
 @contextmanager
 def no_gc() -> Generator[None, None, None]:
+    """Context manager to run code without garbage collector
+
+    Yields
+    ------
+    Generator[None, None, None]
+        Nothing
+    """
+
     try:
         gc.disable()
         yield
@@ -29,6 +37,19 @@ _RT = TypeVar("_RT")
 
 
 def disable_gc(func: Callable[_P, _RT]) -> Callable[_P, _RT]:
+    """Run function without garbage collector
+
+    Parameters
+    ----------
+    func : Callable[_P, _RT]
+        Function to decorate
+
+    Returns
+    -------
+    Callable[_P, _RT]
+        Decorated function
+    """
+
     @wraps(func)
     def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _RT:
         with no_gc():
