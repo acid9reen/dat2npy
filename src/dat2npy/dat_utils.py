@@ -42,7 +42,7 @@ def parse_float(string: str) -> float:
 def read_dat_file(filepath: Path) -> DatFile:
     with open(filepath, "r") as input_:
         header = input_.readline()
-        # ["A1(x)" "A1(y)" "A2(x)" "A2(y)"] <-- Example input
+        # ["A1(x)", "A1(y)", "A2(x)", "A2(y)"] <-- Example input
         # Strip last 3 characters to remove redundant (x) or (y)
         # Get every 2nd to remove duplicates
         # ["A1", "A2"] <-- Example output for example input above
@@ -56,6 +56,7 @@ def read_dat_file(filepath: Path) -> DatFile:
         start_time: Seconds = parse_float(line[0])
         stop_time: Seconds = start_time
         prev_stop_time: Seconds = start_time
+        # Get every 2nd starting with 1 to skip time columns (below the same reason)
         lines.append([parse_float(elem) for elem in line[1::2]])
 
         while (line := input_.readline().split()):
