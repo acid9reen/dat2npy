@@ -1,4 +1,7 @@
+import gc
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Generator
 from typing import NamedTuple
 
 import numpy as np
@@ -6,6 +9,15 @@ from numpy import typing as npt
 
 from dat2npy.types import Hz
 from dat2npy.types import Seconds
+
+
+@contextmanager
+def no_gc() -> Generator[None, None, None]:
+    try:
+        gc.disable()
+        yield
+    finally:
+        gc.enable()
 
 
 class DatFile(NamedTuple):
@@ -40,39 +52,42 @@ def parse_float(string: str) -> float:
 
 
 def read_dat_file(filepath: Path) -> DatFile:
-    with open(filepath, "r") as input_:
-        header = input_.readline()
-        # ["A1(x)", "A1(y)", "A2(x)", "A2(y)"] <-- Example input
-        # Strip last 3 characters to remove redundant (x) or (y)
-        # Get every 2nd to remove duplicates
-        # ["A1", "A2"] <-- Example output for example input above
-        channel_names = tuple(channel_name[:-3] for channel_name in header.split()[::2])
+    with no_gc():
+        with open(filepath, "r") as input_:
+            header = input_.readline()
+            # ["A1(x)", "A1(y)", "A2(x)", "A2(y)"] <-- Example input
+            # Strip last 3 characters to remove redundant (x) or (y)
+            # Get every 2nd to remove duplicates
+            # ["A1", "A2"] <-- Example output for example input above
+            channel_names = tuple(
+                channel_name[:-3] for channel_name in header.split()[::2]
+            )
 
-        # Read lines of floats to convert them to numpy array and transpose
-        lines: list[list[float]] = []
+            # Read lines of floats to convert them to numpy array and transpose
+            lines: list[list[float]] = []
 
-        # Corner case for first line in purpose to get start time of the recording
-        line = input_.readline().split()
-        start_time: Seconds = parse_float(line[0])
-        stop_time: Seconds = start_time
-        prev_stop_time: Seconds = start_time
-        # Get every 2nd starting with 1 to skip time columns (below the same reason)
-        lines.append([parse_float(elem) for elem in line[1::2]])
-
-        while (line := input_.readline().split()):
+            # Corner case for first line in purpose to get start time of the recording
+            line = input_.readline().split()
+            start_time: Seconds = parse_float(line[0])
+            stop_time: Seconds = start_time
+            prev_stop_time: Seconds = start_time
+            # Get every 2nd starting with 1 to skip time columns (below the same reason)
             lines.append([parse_float(elem) for elem in line[1::2]])
-            prev_stop_time, stop_time = stop_time, parse_float(line[0])
 
-    signal = np.array(lines, dtype=np.float32).transpose()
-    frequency: Hz = round(1 / (stop_time - prev_stop_time))
+            while (line := input_.readline().split()):
+                lines.append([parse_float(elem) for elem in line[1::2]])
+                prev_stop_time, stop_time = stop_time, parse_float(line[0])
 
-    dat_file = DatFile(
-        signal=signal,
-        start_time=start_time,
-        stop_time=stop_time,
-        filepath=filepath,
-        channel_names=channel_names,
-        frequency=frequency,
-    )
+        signal = np.array(lines, dtype=np.float32).transpose()
+        frequency: Hz = round(1 / (stop_time - prev_stop_time))
+
+        dat_file = DatFile(
+            signal=signal,
+            start_time=start_time,
+            stop_time=stop_time,
+            filepath=filepath,
+            channel_names=channel_names,
+            frequency=frequency,
+        )
 
     return dat_file
