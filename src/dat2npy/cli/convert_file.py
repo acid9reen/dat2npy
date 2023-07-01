@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from scipy.signal import decimate
 
-from dat2npy.dat_utils import read_dat_file
+from dat2npy.dat import read_dat_file
 from dat2npy.types import Hz
 
 
