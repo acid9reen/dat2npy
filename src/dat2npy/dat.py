@@ -25,11 +25,12 @@ def no_gc() -> Generator[None, None, None]:
         Nothing
     """
 
-    try:
+    if gc.isenabled():
         gc.disable()
         yield
-    finally:
         gc.enable()
+    else:
+        yield
 
 
 _P = ParamSpec("_P")
