@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from dat2npy.dat_utils import read_file
+from dat2npy.dat_utils import read_dat_file
 
 
 class FileConverterNamespace(argparse.Namespace):
@@ -30,7 +30,7 @@ def parse_args() -> FileConverterNamespace:
 
 def main() -> int:
     args = parse_args()
-    dat_file = read_file(args.filepath)
+    dat_file = read_dat_file(args.filepath)
 
     # Create output file path
     output_filename = args.filepath.stem + ".npy"

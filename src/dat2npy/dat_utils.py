@@ -39,7 +39,7 @@ def parse_float(string: str) -> float:
     return float(string.replace(",", "."))
 
 
-def read_file(filepath: Path) -> DatFile:
+def read_dat_file(filepath: Path) -> DatFile:
     with open(filepath, "r") as input_:
         header = input_.readline()
         # ["A1(x)" "A1(y)" "A2(x)" "A2(y)"] <-- Example input
