@@ -53,7 +53,7 @@ def main() -> int:
         dat_file.signal if args.target_frequency is None
         else decimate(
             dat_file.signal,
-            q=round(dat_file.frequency/args.target_frequency),
+            q=round(dat_file.meta.frequency/args.target_frequency),
             axis=1,
         )
     )

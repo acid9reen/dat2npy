@@ -60,6 +60,14 @@ def disable_gc(func: Callable[_P, _RT]) -> Callable[_P, _RT]:
     return wrapper
 
 
+class DatFileMeta(NamedTuple):
+    start_time: Seconds
+    stop_time: Seconds
+    filepath: Path
+    channel_names: tuple[str, ...]
+    frequency: Hz
+
+
 class DatFile(NamedTuple):
     """Contain all information about .dat file
 
@@ -80,11 +88,7 @@ class DatFile(NamedTuple):
     """
 
     signal: npt.NDArray[np.float32]
-    start_time: Seconds
-    stop_time: Seconds
-    filepath: Path
-    channel_names: tuple[str, ...]
-    frequency: Hz
+    meta: DatFileMeta
 
 
 def parse_float(string: str) -> float:
@@ -123,11 +127,13 @@ def read_dat_file(filepath: Path) -> DatFile:
 
     dat_file = DatFile(
         signal=signal,
-        start_time=start_time,
-        stop_time=stop_time,
-        filepath=filepath,
-        channel_names=channel_names,
-        frequency=frequency,
+        meta=DatFileMeta(
+            start_time=start_time,
+            stop_time=stop_time,
+            filepath=filepath,
+            channel_names=channel_names,
+            frequency=frequency,
+        ),
     )
 
     return dat_file
