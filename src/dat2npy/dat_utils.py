@@ -4,6 +4,7 @@ from typing import NamedTuple
 import numpy as np
 from numpy import typing as npt
 
+from dat2npy.types import Hz
 from dat2npy.types import Seconds
 
 
@@ -22,6 +23,8 @@ class DatFile(NamedTuple):
         Path to .dat file
     channel_names : tuple[str]
         Names of electrodes (typically consists of something like "A1" or "B2", etc.)
+    frequency : Hz
+        Frequency of the signal
     """
 
     signal: npt.NDArray[np.float32]
@@ -29,6 +32,7 @@ class DatFile(NamedTuple):
     stop_time: Seconds
     filepath: Path
     channel_names: tuple[str]
+    frequency: Hz
 
 
 def parse_float(string: str) -> float:
@@ -51,13 +55,15 @@ def read_file(filepath: Path) -> DatFile:
         line = input_.readline().split()
         start_time: Seconds = parse_float(line[0])
         stop_time: Seconds = start_time
+        prev_stop_time: Seconds = start_time
         lines.append([parse_float(elem) for elem in line[1::2]])
 
         while (line := input_.readline().split()):
             lines.append([parse_float(elem) for elem in line[1::2]])
-            stop_time = parse_float(line[0])
+            prev_stop_time, stop_time = stop_time, parse_float(line[0])
 
     signal = np.array(lines, dtype=np.float32).transpose()
+    frequency: Hz = round(1 / (stop_time - prev_stop_time))
 
     dat_file = DatFile(
         signal=signal,
@@ -65,6 +71,7 @@ def read_file(filepath: Path) -> DatFile:
         stop_time=stop_time,
         filepath=filepath,
         channel_names=channel_names,
+        frequency=frequency,
     )
 
     return dat_file
