@@ -54,3 +54,10 @@ select = ["E", "F", "Q", "B"]
 src = ["src", "tests"]
 show-source = true
 show-fixes=true
+
+[[tool.mypy.overrides]]
+module = [
+    "scipy",
+    "scipy.*",
+]
+ignore_missing_imports = true

@@ -31,7 +31,7 @@ class DatFile(NamedTuple):
     start_time: Seconds
     stop_time: Seconds
     filepath: Path
-    channel_names: tuple[str]
+    channel_names: tuple[str, ...]
     frequency: Hz
 
 
