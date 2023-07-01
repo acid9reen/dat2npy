@@ -55,7 +55,7 @@ def read_file(filepath: Path) -> DatFile:
 
         while (line := input_.readline().split()):
             lines.append([parse_float(elem) for elem in line[1::2]])
-            stop_time = max(parse_float(line[0]), stop_time)
+            stop_time = parse_float(line[0])
 
     signal = np.array(lines, dtype=np.float32).transpose()
 
