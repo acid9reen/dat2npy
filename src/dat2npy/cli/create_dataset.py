@@ -2,6 +2,7 @@ import argparse
 import json
 from collections import defaultdict
 from pathlib import Path
+from typing import Iterable
 
 import numpy as np
 from scipy.signal import decimate
@@ -60,7 +61,7 @@ def parse_args() -> CreateDatasetNamespace:
 
 
 def process_experiment(
-    signal_paths: list[Path],
+    signal_paths: Iterable[Path],
     label_path: Path,
     target_frequency: Hz | None,
     signals_output_folder: Path,
@@ -92,7 +93,9 @@ def process_experiment(
         npy_filename = "X_" + filename + ".npy"
         np.save(signals_output_folder / npy_filename, signal_to_save)
 
-        label = [[] for __ in range(len(dat_file.meta.channel_names))]
+        label: list[list[float]] = [
+            [] for __ in range(len(dat_file.meta.channel_names))
+        ]
 
         channels = [
             CHANNEL_NAME_TO_INDEX[channel_name]
