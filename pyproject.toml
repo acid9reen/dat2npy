@@ -30,6 +30,7 @@ dev = [
 
 [project.scripts]
 convert_file = "dat2npy.cli.convert_file:main"
+create_dataset = "dat2npy.cli.create_dataset:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
